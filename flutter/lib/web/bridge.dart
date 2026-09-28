@@ -872,6 +872,12 @@ class RustdeskImpl {
     return js.context.callMethod('getByName', ['app-name']);
   }
 
+  // DiceX: mirrors main_get_app_display_name_sync in src/flutter_ffi.rs.
+  String mainGetAppDisplayNameSync({dynamic hint}) {
+    final name = mainGetAppNameSync(hint: hint);
+    return name == 'DiceXRemote' ? 'DiceX Remote' : name;
+  }
+
   String mainUriPrefixSync({dynamic hint}) {
     throw UnimplementedError("mainUriPrefixSync");
   }

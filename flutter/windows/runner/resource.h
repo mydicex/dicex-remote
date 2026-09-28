@@ -3,6 +3,9 @@
 // Used by Runner.rc
 //
 #define IDI_APP_ICON                    101
+// DiceX: splash bitmaps (splash.cpp).
+#define IDB_SPLASH_1X                   201
+#define IDB_SPLASH_2X                   202
 
 // Next default values for new objects
 //

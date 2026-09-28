@@ -9,6 +9,7 @@
 
 #include "win32_desktop.h"
 #include "flutter_window.h"
+#include "splash.h"
 #include "utils.h"
 
 typedef char** (*FUNC_RUSTDESK_CORE_MAIN)(int*);
@@ -89,8 +90,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
     }
   }
 
+  // DiceX: window titles use the display name ("DiceX Remote"), so the single-instance lookup
+  // below has to use it too; core_main.rs does the same when it forwards links to this window.
+  std::wstring display_name = app_name;
+  FUNC_RUSTDESK_GET_APP_NAME get_rustdesk_app_display_name = (FUNC_RUSTDESK_GET_APP_NAME)GetProcAddress(hInstance, "get_rustdesk_app_display_name");
+  if (get_rustdesk_app_display_name) {
+    wchar_t display_name_buffer[512] = {0};
+    if (get_rustdesk_app_display_name(display_name_buffer, 512) == 0) {
+      display_name = std::wstring(display_name_buffer);
+    }
+  }
+
   // Uri links dispatch
-  HWND hwnd = ::FindWindowW(getWindowClassName(), app_name.c_str());
+  HWND hwnd = ::FindWindowW(getWindowClassName(), display_name.c_str());
   if (hwnd != NULL) {
     // Allow multiple flutter instances when being executed by parameters
     // contained in whitelists.
@@ -122,6 +134,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
       }
       return EXIT_FAILURE;
     }
+  }
+
+  // DiceX: splash for a plain start only. The service, tray, connection manager, install page
+  // and link handling all start with arguments and must not show it.
+  if (command_line_arguments.empty()) {
+    dicex_splash::Show(instance);
   }
 
   // Attach to console when present (e.g., 'flutter run') or create a
@@ -169,16 +187,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   std::wstring window_title;
   if (is_cm_page) {
-    window_title = app_name + L" - Connection Manager";
+    window_title = display_name + L" - Connection Manager";
   } else if (is_install_page) {
-    window_title = app_name + L" - Install";
+    window_title = display_name + L" - Install";
   } else {
-    window_title = app_name;
+    window_title = display_name;
   }
   if (!window.CreateAndShow(window_title, origin, size, !is_cm_page)) {
       return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
+  // DiceX: the window is created hidden and Dart shows it once ready; the splash goes then.
+  dicex_splash::CloseWhenVisible(window.GetHandle());
 
   ::MSG msg;
   while (::GetMessage(&msg, nullptr, 0, 0))

@@ -1083,6 +1083,20 @@ pub fn get_app_name() -> String {
     hbb_common::config::APP_NAME.read().unwrap().clone()
 }
 
+/// DiceX: the name people see, in window titles and UI text. `get_app_name()` stays a
+/// space-free identifier because it also names the exe, the Windows service, the install and
+/// config folders and the URI scheme. Anything that finds the main window by its title must use
+/// this one too, since that is the title the window gets.
+#[inline]
+pub fn get_app_display_name() -> String {
+    let name = get_app_name();
+    if name == "DiceXRemote" {
+        "DiceX Remote".to_owned()
+    } else {
+        name
+    }
+}
+
 #[inline]
 pub fn is_rustdesk() -> bool {
     hbb_common::config::APP_NAME.read().unwrap().eq("RustDesk")

@@ -54,6 +54,10 @@ END
 // remains consistent on all systems.
 IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
 
+// DiceX: splash (splash.cpp), premultiplied 32-bit, from brand/tools/make-splash.ps1.
+IDB_SPLASH_1X           BITMAP                  "resources\\splash_1x.bmp"
+IDB_SPLASH_2X           BITMAP                  "resources\\splash_2x.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

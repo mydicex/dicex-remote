@@ -3021,7 +3021,8 @@ int versionCmp(String v1, String v2) {
 }
 
 String getWindowName({WindowType? overrideType}) {
-  final name = bind.mainGetAppNameSync();
+  // DiceX: the display name. main.cpp and core_main.rs find the main window by this title.
+  final name = bind.mainGetAppDisplayNameSync();
   switch (overrideType ?? kWindowType) {
     case WindowType.Main:
       return name;
@@ -3731,7 +3732,9 @@ Color? disabledTextColor(BuildContext context, bool enabled) {
 }
 
 Widget loadPowered(BuildContext context) {
-  if (bind.mainGetBuildinOption(key: "hide-powered-by-me") == 'Y') {
+  // DiceX: no "Powered by RustDesk" line; the attribution lives in About (AGPL notice).
+  if (bind.mainGetBuildinOption(key: "hide-powered-by-me") == 'Y' ||
+      bind.mainGetAppNameSync() == 'DiceXRemote') {
     return SizedBox.shrink();
   }
   return MouseRegion(
