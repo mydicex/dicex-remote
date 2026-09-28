@@ -85,17 +85,18 @@ VS_VERSION_INFO VERSIONINFO
  FILETYPE VFT_APP
  FILESUBTYPE 0x0L
 BEGIN
+    // DiceX: TODO(dicex) CompanyName must become the legal entity that signs the code.
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Purslane Tech Pte. Ltd." "\0"
-            VALUE "FileDescription", "RustDesk Remote Desktop" "\0"
+            VALUE "CompanyName", "DiceX" "\0"
+            VALUE "FileDescription", "DiceX Remote" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "rustdesk" "\0"
-            VALUE "LegalCopyright", "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved." "\0"
-            VALUE "OriginalFilename", "rustdesk.exe" "\0"
-            VALUE "ProductName", "RustDesk" "\0"
+            VALUE "InternalName", "DiceXRemote" "\0"
+            VALUE "LegalCopyright", "Copyright © 2026 DiceX. Based on RustDesk, Copyright © 2026 Purslane Tech Pte. Ltd., licensed under AGPL-3.0." "\0"
+            VALUE "OriginalFilename", "DiceXRemote.exe" "\0"
+            VALUE "ProductName", "DiceX Remote" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
