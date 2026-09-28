@@ -85,12 +85,12 @@ VS_VERSION_INFO VERSIONINFO
  FILETYPE VFT_APP
  FILESUBTYPE 0x0L
 BEGIN
-    // DiceX: TODO(dicex) CompanyName must become the legal entity that signs the code.
+    // DiceX: CompanyName is the legal entity that will sign the code (DiceX's company in Oman).
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "DiceX" "\0"
+            VALUE "CompanyName", "New Taste For Technology And Investment LLC" "\0"
             VALUE "FileDescription", "DiceX Remote" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "DiceXRemote" "\0"

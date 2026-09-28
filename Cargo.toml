@@ -255,6 +255,7 @@ webrtc-sctp = { git = "https://github.com/rustdesk-org/webrtc", rev = "49c89bd8d
 
 [package.metadata.winres]
 LegalCopyright = "Copyright © 2026 DiceX. Based on RustDesk, Copyright © 2026 Purslane Tech Pte. Ltd., licensed under AGPL-3.0."
+CompanyName = "New Taste For Technology And Investment LLC"
 ProductName = "DiceX Remote"
 FileDescription = "DiceX Remote"
 OriginalFilename = "DiceXRemote.exe"
