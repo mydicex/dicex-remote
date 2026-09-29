@@ -16,8 +16,9 @@ namespace dicex_splash {
 // Does nothing if the bitmap cannot be loaded.
 void Show(HINSTANCE instance);
 
-// Closes the splash as soon as |main_window| is visible. A timeout closes it regardless,
-// so it can never outlive a start-up that keeps the main window hidden.
+// Fades the splash out once |main_window| is visible and it has been up for at least two
+// seconds. A timeout closes it regardless, so it can never outlive a start-up that keeps the
+// main window hidden.
 void CloseWhenVisible(HWND main_window);
 
 }  // namespace dicex_splash

@@ -9,22 +9,44 @@ namespace {
 constexpr wchar_t kClassName[] = L"DiceXRemoteSplash";
 constexpr UINT_PTR kWatchTimerId = 1;
 constexpr UINT kWatchIntervalMs = 100;
+constexpr UINT_PTR kFadeTimerId = 2;
+constexpr UINT kFadeIntervalMs = 16;
+constexpr ULONGLONG kFadeMs = 300;
+// The splash stays at least this long even when the app is ready sooner (owner's request).
+constexpr ULONGLONG kMinVisibleMs = 2000;
 // Long enough for a slow first start, short enough that a splash can never linger.
-constexpr UINT kMaxLifetimeMs = 20000;
+constexpr ULONGLONG kMaxLifetimeMs = 20000;
 
 HWND g_splash = nullptr;
 HWND g_main_window = nullptr;
 ULONGLONG g_shown_at = 0;
+ULONGLONG g_fade_started_at = 0;
+
+void SetAlpha(HWND hwnd, BYTE alpha) {
+  // With no source DC, UpdateLayeredWindow only changes the constant alpha.
+  BLENDFUNCTION blend = {AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA};
+  ::UpdateLayeredWindow(hwnd, nullptr, nullptr, nullptr, nullptr, nullptr, 0, &blend,
+                        ULW_ALPHA);
+}
 
 LRESULT CALLBACK SplashProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   switch (message) {
     case WM_TIMER:
       if (wparam == kWatchTimerId) {
+        const ULONGLONG elapsed = ::GetTickCount64() - g_shown_at;
         const bool main_visible = g_main_window && ::IsWindowVisible(g_main_window);
-        const bool expired = ::GetTickCount64() - g_shown_at > kMaxLifetimeMs;
-        if (main_visible || expired) {
+        if ((main_visible && elapsed >= kMinVisibleMs) || elapsed > kMaxLifetimeMs) {
           ::KillTimer(hwnd, kWatchTimerId);
+          g_fade_started_at = ::GetTickCount64();
+          ::SetTimer(hwnd, kFadeTimerId, kFadeIntervalMs, nullptr);
+        }
+      } else if (wparam == kFadeTimerId) {
+        const ULONGLONG fading = ::GetTickCount64() - g_fade_started_at;
+        if (fading >= kFadeMs) {
+          ::KillTimer(hwnd, kFadeTimerId);
           ::DestroyWindow(hwnd);
+        } else {
+          SetAlpha(hwnd, static_cast<BYTE>(255 - (255 * fading) / kFadeMs));
         }
       }
       return 0;
