@@ -24,6 +24,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../common/widgets/dialog.dart';
 import '../../common/widgets/login.dart';
+import '../../dicex/dicex.dart';
 
 const double _kTabWidth = 200;
 const double _kTabHeight = 42;
@@ -857,14 +858,17 @@ class _GeneralState extends State<_General> {
     }(), hasData: (res) {
       Map<String, String> data = res as Map<String, String>;
       List<dynamic> langsList = jsonDecode(data['langs']!);
-      Map<String, String> langsMap = {for (var v in langsList) v[0]: v[1]};
+      // DiceX: only English, Persian, Arabic and German, English by default — no "follow the
+      // system language" entry (owner, 2026-09-29).
+      Map<String, String> langsMap = {
+        for (var v in langsList)
+          if (kDiceXLanguages.contains(v[0])) v[0]: v[1]
+      };
       List<String> keys = langsMap.keys.toList();
       List<String> values = langsMap.values.toList();
-      keys.insert(0, defaultOptionLang);
-      values.insert(0, translate('Default'));
       String currentKey = bind.mainGetLocalOption(key: kCommConfKeyLang);
       if (!keys.contains(currentKey)) {
-        currentKey = defaultOptionLang;
+        currentKey = 'en';
       }
       final isOptFixed = isOptionFixed(kCommConfKeyLang);
       return ComboBox(
@@ -2564,7 +2568,7 @@ class _AboutState extends State<_About> {
                   ).marginSymmetric(vertical: 4.0)),
               InkWell(
                   onTap: () {
-                    launchUrlString('https://dicex.me');
+                    launchUrlString(kDiceXRemoteSite);
                   },
                   child: Text(
                     translate('Website'),

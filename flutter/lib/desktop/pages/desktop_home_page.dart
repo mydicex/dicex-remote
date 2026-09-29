@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:window_size/window_size.dart' as window_size;
+import '../../dicex/dicex.dart';
 import '../widgets/button.dart';
 
 class DesktopHomePage extends StatefulWidget {
@@ -83,7 +84,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       if (bind.isCustomClient())
         Align(
           alignment: Alignment.center,
-          child: loadPowered(context),
+          // DiceX: link to the DiceX Remote site instead of "Powered by RustDesk".
+          child: diceXSiteLink(context),
         ),
       Align(
         alignment: Alignment.center,
@@ -92,6 +94,15 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),
+      // DiceX: send someone a link to download DiceX Remote.
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          onPressed: showDiceXInviteDialog,
+          icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
+          label: Text(translate('Invite someone')),
+        ),
+      ).marginOnly(left: 14, bottom: 6),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -210,16 +221,22 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          translate("ID"),
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.color
-                                  ?.withOpacity(0.5)),
-                        ).marginOnly(top: 5),
+                        // DiceX: the region sits next to the ID; both sides of a session must
+                        // be on the same one.
+                        Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text(
+                            translate("ID"),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.color
+                                    ?.withOpacity(0.5)),
+                          ),
+                          const SizedBox(width: 10),
+                          const DiceXRegionChip(),
+                        ]).marginOnly(top: 5),
                         buildPopupMenu(context)
                       ],
                     ),
