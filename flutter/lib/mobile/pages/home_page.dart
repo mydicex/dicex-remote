@@ -150,7 +150,8 @@ class HomePageState extends State<HomePage> {
         ],
       );
     }
-    return Text(bind.mainGetAppNameSync());
+    // DiceX: the display name ("DiceX Remote"), not the space-free identifier.
+    return Text(bind.mainGetAppDisplayNameSync());
   }
 }
 
