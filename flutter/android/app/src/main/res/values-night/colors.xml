@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- DiceX: launch screen background, the app's own dark background (MyTheme.darkTheme). -->
+    <color name="dicex_splash_background">#FF18191E</color>
+</resources>

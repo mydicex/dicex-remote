@@ -148,14 +148,21 @@ String _diceXLang() {
   return kDiceXLanguages.contains(lang) ? lang : 'en';
 }
 
-/// Same steps as the language box in Settings.
+/// Same steps as the language box in desktop Settings. The phone has no sub-windows (the
+/// multi-window plugin is desktop-only), so it rebuilds just its own tree, which RefreshWrapper
+/// wraps there too.
 Future<void> diceXSetLanguage(String lang) async {
   await bind.mainSetLocalOption(key: kCommConfKeyLang, value: lang);
-  reloadAllWindows();
-  bind.mainChangeLanguage(lang: lang);
+  if (isDesktop) {
+    reloadAllWindows();
+    bind.mainChangeLanguage(lang: lang);
+  } else {
+    reloadCurrentWindow();
+  }
 }
 
-/// The language flags at the bottom of the home page's left pane, besides the box in Settings.
+/// The language flags: at the bottom of the desktop home page's left pane and under the ID box
+/// on the phone, besides the box in Settings.
 class DiceXLanguageFlags extends StatelessWidget {
   const DiceXLanguageFlags({Key? key}) : super(key: key);
 

@@ -14,6 +14,7 @@ import '../../common.dart';
 import '../../common/widgets/peer_tab_page.dart';
 import '../../common/widgets/autocomplete.dart';
 import '../../consts.dart';
+import '../../dicex/dicex.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
 import 'home_page.dart';
@@ -87,6 +88,19 @@ class _ConnectionPageState extends State<ConnectionPage> {
           if (!bind.isCustomClient() && !isIOS)
             Obx(() => _buildUpdateUI(stateGlobal.updateUrl.value)),
           _buildRemoteIDTextField(),
+          // DiceX: invitations and the language flags, as on the desktop home page.
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton.icon(
+                onPressed: () => showDiceXInviteDialog(),
+                icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
+                label: Text(translate('Invite someone')),
+              ),
+              const DiceXLanguageFlags(),
+            ],
+          ).marginOnly(top: 4),
         ])),
         SliverFillRemaining(
           hasScrollBody: true,

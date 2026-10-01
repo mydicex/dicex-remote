@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="primary">#FF0071FF</color>
+    <!-- DiceX: launch screen background, the app's own light background. -->
+    <color name="dicex_splash_background">#FFFFFFFF</color>
 </resources>

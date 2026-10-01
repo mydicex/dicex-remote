@@ -15,6 +15,7 @@ import '../../common.dart';
 import '../../common/widgets/dialog.dart';
 import '../../common/widgets/login.dart';
 import '../../consts.dart';
+import '../../dicex/dicex.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
 import '../widgets/deploy_dialog.dart';
@@ -1119,14 +1120,13 @@ void showLanguageSettings(OverlayDialogManager dialogManager) async {
       }
 
       final isOptFixed = isOptionFixed(kCommConfKeyLang);
+      // DiceX: only the four DiceX Remote languages, and no "Default" (English is the default),
+      // as in the desktop settings.
       return CustomAlertDialog(
         content: Column(
-          children: [
-                getRadio(Text(translate('Default')), defaultOptionLang, lang,
-                    isOptFixed ? null : setLang),
-                Divider(color: MyTheme.border),
-              ] +
-              langs.map((e) {
+          children: langs
+              .where((e) => kDiceXLanguages.contains(e[0]))
+              .map((e) {
                 final key = e[0] as String;
                 final name = e[1] as String;
                 return getRadio(Text(translate(name)), key, lang,

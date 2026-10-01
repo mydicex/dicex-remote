@@ -18,7 +18,10 @@ import android.content.ClipboardManager
 import android.os.Bundle
 import android.os.Build
 import android.os.IBinder
+import android.os.SystemClock
 import android.util.Log
+import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.media.MediaCodecInfo
 import android.media.MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
@@ -49,6 +52,8 @@ class MainActivity : FlutterActivity() {
         private var _rdClipboardManager: RdClipboardManager? = null
         val rdClipboardManager: RdClipboardManager?
             get() = _rdClipboardManager;
+        // DiceX: shortest time the launch screen stays up (Windows: kMinVisibleMs in splash.cpp).
+        private const val DICEX_SPLASH_MIN_MS = 2000L
     }
 
     private val channelTag = "mChannel"
@@ -225,6 +230,23 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // DiceX: keep the launch screen up for at least two seconds, like the Windows splash.
+        // While a pre-draw listener answers false, the window does not draw, so Android 12+ keeps
+        // its splash and older versions keep the launch background (FlutterActivity holds its
+        // first frame the same way until Flutter is ready). Not on recreation, e.g. rotation.
+        if (savedInstanceState == null) {
+            val shownAt = SystemClock.uptimeMillis()
+            val content = findViewById<View>(android.R.id.content)
+            content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    if (SystemClock.uptimeMillis() - shownAt < DICEX_SPLASH_MIN_MS) {
+                        return false
+                    }
+                    content.viewTreeObserver.removeOnPreDrawListener(this)
+                    return true
+                }
+            })
+        }
         if (_rdClipboardManager == null) {
             _rdClipboardManager = RdClipboardManager(getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
             FFI.setClipboardManager(_rdClipboardManager!!)
