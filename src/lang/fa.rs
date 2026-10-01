@@ -798,7 +798,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Enter a mobile number with its country code.", "شمارهٔ موبایل را با کد کشور وارد کنید."),
         ("That number doesn't look right. Include the country code, like +96891234567.", "این شماره درست به نظر نمی‌رسد. کد کشور را هم بنویسید، مثل +96891234567."),
         ("SMS reaches local numbers only. Choose another channel.", "پیامک فقط به شماره‌های داخلی می‌رسد. کانال دیگری انتخاب کنید."),
-        ("You have reached the invitation limit for now. Try again later.", "فعلاً به سقف دعوت رسیده‌اید. کمی بعد دوباره امتحان کنید."),
+        ("You've used today's messages. You can send more tomorrow.", "سهمیهٔ پیام امروزتان تمام شده است. فردا دوباره می‌توانید بفرستید."),
         ("This number already received an invitation today.", "این شماره امروز یک دعوت‌نامه دریافت کرده است."),
         ("Too many invitations were sent from your network today.", "امروز از شبکهٔ شما دعوت‌نامهٔ زیادی ارسال شده است."),
         ("Invitations are paused for today. Try again tomorrow.", "ارسال دعوت‌نامه برای امروز متوقف شده است. فردا دوباره امتحان کنید."),
@@ -807,5 +807,10 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Invitations are turned off right now.", "ارسال دعوت‌نامه فعلاً غیرفعال است."),
         ("The invitation couldn't be sent. Try again later.", "دعوت‌نامه ارسال نشد. بعداً دوباره امتحان کنید."),
         ("DiceX Remote website", "وب‌سایت DiceX Remote"),
+        ("Send my ID", "ارسال شناسهٔ من"),
+        ("Send someone your ID and a link to download DiceX Remote, so they can connect to this computer.", "شناسهٔ خودتان و لینک دانلود DiceX Remote را برای کسی بفرستید تا بتواند به این کامپیوتر وصل شود."),
+        ("Your password is not sent. Tell it to them yourself when they connect.", "رمز عبور شما فرستاده نمی‌شود. وقتی وصل شدند، آن را خودتان به آن‌ها بگویید."),
+        ("Your ID was sent", "شناسهٔ شما ارسال شد"),
+        ("Messages left today", "پیام‌های باقی‌ماندهٔ امروز"),
     ].iter().cloned().collect();
 }

@@ -197,7 +197,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
       return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
-  // DiceX: the window is created hidden and Dart shows it once ready; the splash goes then.
+  // DiceX: the window is created hidden; Dart tells the splash it is ready, waits for it to fade
+  // out, then shows the window (lib/dicex/splash_win.dart).
   dicex_splash::CloseWhenVisible(window.GetHandle());
 
   ::MSG msg;

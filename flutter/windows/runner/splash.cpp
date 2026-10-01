@@ -16,11 +16,15 @@ constexpr ULONGLONG kFadeMs = 300;
 constexpr ULONGLONG kMinVisibleMs = 2000;
 // Long enough for a slow first start, short enough that a splash can never linger.
 constexpr ULONGLONG kMaxLifetimeMs = 20000;
+// Posted by Dart (lib/dicex/splash_win.dart) when the app is ready to show; Dart then waits for
+// the splash to go before it shows the main window, so the app never appears behind it.
+constexpr UINT kReadyMessage = WM_APP + 1;
 
 HWND g_splash = nullptr;
 HWND g_main_window = nullptr;
 ULONGLONG g_shown_at = 0;
 ULONGLONG g_fade_started_at = 0;
+bool g_app_ready = false;
 
 void SetAlpha(HWND hwnd, BYTE alpha) {
   // With no source DC, UpdateLayeredWindow only changes the constant alpha.
@@ -31,11 +35,16 @@ void SetAlpha(HWND hwnd, BYTE alpha) {
 
 LRESULT CALLBACK SplashProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   switch (message) {
+    case kReadyMessage:
+      g_app_ready = true;
+      return 0;
     case WM_TIMER:
       if (wparam == kWatchTimerId) {
         const ULONGLONG elapsed = ::GetTickCount64() - g_shown_at;
+        // A main window that shows without saying it is ready (an older Dart side) still ends it.
         const bool main_visible = g_main_window && ::IsWindowVisible(g_main_window);
-        if ((main_visible && elapsed >= kMinVisibleMs) || elapsed > kMaxLifetimeMs) {
+        if (((g_app_ready || main_visible) && elapsed >= kMinVisibleMs) ||
+            elapsed > kMaxLifetimeMs) {
           ::KillTimer(hwnd, kWatchTimerId);
           g_fade_started_at = ::GetTickCount64();
           ::SetTimer(hwnd, kFadeTimerId, kFadeIntervalMs, nullptr);

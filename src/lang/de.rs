@@ -798,7 +798,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Enter a mobile number with its country code.", "Geben Sie die Mobilnummer mit Ländervorwahl ein."),
         ("That number doesn't look right. Include the country code, like +96891234567.", "Diese Nummer scheint nicht zu stimmen. Geben Sie die Ländervorwahl an, z. B. +96891234567."),
         ("SMS reaches local numbers only. Choose another channel.", "SMS erreichen nur inländische Nummern. Wählen Sie einen anderen Kanal."),
-        ("You have reached the invitation limit for now. Try again later.", "Sie haben das Einladungslimit vorerst erreicht. Versuchen Sie es später erneut."),
+        ("You've used today's messages. You can send more tomorrow.", "Sie haben die heutigen Nachrichten aufgebraucht. Morgen können Sie wieder senden."),
         ("This number already received an invitation today.", "Diese Nummer hat heute bereits eine Einladung erhalten."),
         ("Too many invitations were sent from your network today.", "Aus Ihrem Netzwerk wurden heute zu viele Einladungen gesendet."),
         ("Invitations are paused for today. Try again tomorrow.", "Einladungen sind für heute pausiert. Versuchen Sie es morgen erneut."),
@@ -807,5 +807,10 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Invitations are turned off right now.", "Einladungen sind gerade ausgeschaltet."),
         ("The invitation couldn't be sent. Try again later.", "Die Einladung konnte nicht gesendet werden. Versuchen Sie es später erneut."),
         ("DiceX Remote website", "DiceX Remote-Website"),
+        ("Send my ID", "Meine ID senden"),
+        ("Send someone your ID and a link to download DiceX Remote, so they can connect to this computer.", "Senden Sie jemandem Ihre ID und einen Link zum Herunterladen von DiceX Remote, damit er sich mit diesem Computer verbinden kann."),
+        ("Your password is not sent. Tell it to them yourself when they connect.", "Ihr Passwort wird nicht gesendet. Teilen Sie es der Person selbst mit, wenn sie sich verbindet."),
+        ("Your ID was sent", "Ihre ID wurde gesendet"),
+        ("Messages left today", "Heute verbleibende Nachrichten"),
     ].iter().cloned().collect();
 }

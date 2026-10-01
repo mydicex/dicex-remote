@@ -94,15 +94,25 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),
-      // DiceX: send someone a link to download DiceX Remote.
+      // DiceX: send someone a link to download DiceX Remote, or that link and this ID.
       Align(
         alignment: Alignment.centerLeft,
         child: TextButton.icon(
-          onPressed: showDiceXInviteDialog,
+          onPressed: () => showDiceXInviteDialog(),
           icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
           label: Text(translate('Invite someone')),
         ),
-      ).marginOnly(left: 14, bottom: 6),
+      ).marginOnly(left: 14),
+      if (!isOutgoingOnly)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => showDiceXInviteDialog(shareId: true),
+            icon: const Icon(Icons.send_to_mobile_outlined, size: 18),
+            label: Text(translate('Send my ID')),
+          ),
+        ).marginOnly(left: 14),
+      const SizedBox(height: 6),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -153,7 +163,13 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                     children: children,
                   ),
                 ),
-                Expanded(child: Container())
+                Expanded(child: Container()),
+                // DiceX: language flags, besides the box in Settings (owner, 2026-10-01).
+                if (!isOutgoingOnly)
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: DiceXLanguageFlags(),
+                  ).marginOnly(left: 14, bottom: 10),
               ],
             ),
             if (isOutgoingOnly)

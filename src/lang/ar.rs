@@ -798,7 +798,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Enter a mobile number with its country code.", "أدخل رقم الجوال مع رمز الدولة."),
         ("That number doesn't look right. Include the country code, like +96891234567.", "يبدو أن هذا الرقم غير صحيح. أضف رمز الدولة، مثل +96891234567."),
         ("SMS reaches local numbers only. Choose another channel.", "تصل الرسائل النصية إلى الأرقام المحلية فقط. اختر قناة أخرى."),
-        ("You have reached the invitation limit for now. Try again later.", "لقد بلغت حد الدعوات حاليًا. حاول مرة أخرى لاحقًا."),
+        ("You've used today's messages. You can send more tomorrow.", "لقد استنفدت رسائل اليوم. يمكنك الإرسال مرة أخرى غدًا."),
         ("This number already received an invitation today.", "تلقى هذا الرقم دعوة اليوم بالفعل."),
         ("Too many invitations were sent from your network today.", "تم إرسال دعوات كثيرة من شبكتك اليوم."),
         ("Invitations are paused for today. Try again tomorrow.", "تم إيقاف الدعوات لهذا اليوم. حاول مرة أخرى غدًا."),
@@ -807,5 +807,10 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Invitations are turned off right now.", "الدعوات متوقفة حاليًا."),
         ("The invitation couldn't be sent. Try again later.", "تعذر إرسال الدعوة. حاول مرة أخرى لاحقًا."),
         ("DiceX Remote website", "موقع DiceX Remote"),
+        ("Send my ID", "إرسال المعرف الخاص بي"),
+        ("Send someone your ID and a link to download DiceX Remote, so they can connect to this computer.", "أرسل المعرف الخاص بك ورابط تنزيل DiceX Remote إلى شخص ما ليتمكن من الاتصال بهذا الكمبيوتر."),
+        ("Your password is not sent. Tell it to them yourself when they connect.", "لا تُرسَل كلمة المرور. أخبرهم بها بنفسك عند الاتصال."),
+        ("Your ID was sent", "تم إرسال المعرف الخاص بك"),
+        ("Messages left today", "الرسائل المتبقية اليوم"),
     ].iter().cloned().collect();
 }

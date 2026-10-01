@@ -16,9 +16,10 @@ namespace dicex_splash {
 // Does nothing if the bitmap cannot be loaded.
 void Show(HINSTANCE instance);
 
-// Fades the splash out once |main_window| is visible and it has been up for at least two
-// seconds. A timeout closes it regardless, so it can never outlive a start-up that keeps the
-// main window hidden.
+// The splash fades out once it has been up for at least two seconds and the app is ready: Dart
+// posts WM_APP + 1 to it (lib/dicex/splash_win.dart) and shows the main window only after the
+// splash is gone. |main_window| becoming visible counts as ready too. A timeout closes it
+// regardless, so it can never outlive a start-up that keeps the main window hidden.
 void CloseWhenVisible(HWND main_window);
 
 }  // namespace dicex_splash

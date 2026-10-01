@@ -25,6 +25,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'common.dart';
 import 'consts.dart';
+import 'dicex/splash_win.dart' if (dart.library.html) 'dicex/splash_web.dart';
 import 'mobile/pages/home_page.dart';
 import 'mobile/pages/server_page.dart';
 import 'mobile/widgets/deploy_dialog.dart';
@@ -159,8 +160,11 @@ void runMainApp(bool startService) async {
     final handledByUniLinks = await initUniLinks();
     debugPrint("handled by uni links: $handledByUniLinks");
     if (handledByUniLinks || handleUriLink(cmdArgs: kBootArgs)) {
+      diceXSplashReady();
       windowManager.hide();
     } else {
+      // DiceX: show the window after the splash has gone, not behind it.
+      await diceXSplashReady(waitUntilGone: true);
       windowManager.show();
       windowManager.focus();
       // Move registration of active main window here to prevent from async visible check.
