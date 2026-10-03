@@ -278,8 +278,7 @@ String _diceXInviteError(String code) {
           "That number doesn't look right. Include the country code, like +96891234567.");
     case 'sms_local_numbers_only':
       return translate('SMS reaches local numbers only. Choose another channel.');
-    case 'rate_limited_device':
-      return translate("You've used today's messages. You can send more tomorrow.");
+    // rate_limited_device is not a line of text: the dialog turns into the daily-limit alert.
     case 'rate_limited_recipient':
       return translate('This number already received an invitation today.');
     case 'rate_limited_network':
@@ -301,17 +300,19 @@ String _diceXInviteError(String code) {
 class _DiceXInviteOptions {
   var channels = <String>[];
 
-  /// Today's messages for this device: both kinds count (server LIMIT_PER_ID_DAY).
+  /// Today's free messages of this kind for this device (server LIMIT_PER_ID_DAY): 5 invitations
+  /// and 1 "Send my ID" (owner, 2026-10-03).
   int? limit;
   int? remaining;
   String? error;
 }
 
-Future<_DiceXInviteOptions> _diceXInviteOptions(String api, String id) async {
+Future<_DiceXInviteOptions> _diceXInviteOptions(String api, String id, String kind) async {
   final options = _DiceXInviteOptions();
   try {
     final res = await http
-        .get(Uri.parse('$api/v1/channels').replace(queryParameters: {'id': id}))
+        .get(Uri.parse('$api/v1/channels')
+            .replace(queryParameters: {'id': id, 'kind': kind}))
         .timeout(const Duration(seconds: 10));
     final reply = jsonDecode(utf8.decode(res.bodyBytes));
     if (reply is Map && reply['ok'] == true) {
@@ -333,9 +334,9 @@ Future<_DiceXInviteOptions> _diceXInviteOptions(String api, String id) async {
   return options;
 }
 
-/// Returns null when sent, otherwise the error in words.
+/// Returns null when sent, otherwise the service's error code ('' when it could not be reached).
 Future<String?> _diceXSendInvite(
-    String api, String id, String mobile, String channel, bool shareId) async {
+    String api, String id, String mobile, String channel, String kind) async {
   try {
     final res = await http
         .post(Uri.parse('$api/v1/invite'),
@@ -345,14 +346,14 @@ Future<String?> _diceXSendInvite(
               'mobile': mobile,
               'channel': channel,
               'lang': _diceXLang(),
-              'kind': shareId ? 'share_id' : 'invite',
+              'kind': kind,
             }))
         .timeout(const Duration(seconds: 25));
     final reply = jsonDecode(utf8.decode(res.bodyBytes));
     if (reply is Map && reply['ok'] == true) return null;
-    return _diceXInviteError(reply is Map ? '${reply['error'] ?? ''}' : '');
+    return reply is Map ? '${reply['error'] ?? ''}' : '';
   } catch (_) {
-    return _diceXInviteError('');
+    return '';
   }
 }
 
@@ -360,8 +361,14 @@ Future<String?> _diceXSendInvite(
 /// message also carries this device's ID, so the recipient can connect to it. Only a number and
 /// a channel come from here: the server writes the text and inserts the ID it has verified. The
 /// password is never sent.
+///
+/// Each kind has its own free daily allowance. When it is used up, whether the service says so
+/// on opening or on sending, the dialog becomes an alert instead of the form. More messages will
+/// come with a DiceX account and credit (owner, 2026-10-03), which does not exist yet: the alert
+/// says "coming soon" and offers nothing to buy.
 Future<void> showDiceXInviteDialog({bool shareId = false}) async {
   final api = (diceXCurrentRegion() ?? kDiceXRegions.first).api;
+  final kind = shareId ? 'share_id' : 'invite';
   final id = (await bind.mainGetMyId()).replaceAll(' ', '');
   final mobile = TextEditingController();
   var loading = true;
@@ -396,20 +403,49 @@ Future<void> showDiceXInviteDialog({bool shareId = false}) async {
         sending = true;
         error = null;
       });
-      final result = await _diceXSendInvite(api, id, number, channel, shareId);
+      final code = await _diceXSendInvite(api, id, number, channel, kind);
       if (closed) return;
-      if (result == null) {
+      if (code == null) {
         dismiss();
         showToast(translate(shareId ? 'Your ID was sent' : 'Invitation sent'));
       } else {
         setState(() {
           sending = false;
-          error = result;
+          if (code == 'rate_limited_device') {
+            remaining = 0;
+          } else {
+            error = _diceXInviteError(code);
+          }
         });
       }
     }
 
     final hint = Theme.of(context).hintColor;
+    if (usedUp) {
+      return CustomAlertDialog(
+        title: Row(children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+          const SizedBox(width: 8),
+          Flexible(child: Text(translate('Daily limit reached'))),
+        ]),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(translate(shareId
+                ? "You've already sent your ID today. You can send it again tomorrow."
+                : "You've used today's free invitations. You can send more tomorrow.")),
+            Text(
+              translate('Sending more with a DiceX account and credit is coming soon.'),
+              style: TextStyle(fontSize: 12, color: hint),
+            ).marginOnly(top: 10),
+          ],
+        ),
+        actions: [dialogButton('OK', onPressed: dismiss)],
+        onSubmit: dismiss,
+        onCancel: dismiss,
+      );
+    }
     return CustomAlertDialog(
       title: Text(translate(shareId ? 'Send my ID' : 'Invite someone')),
       content: Column(
@@ -419,18 +455,13 @@ Future<void> showDiceXInviteDialog({bool shareId = false}) async {
           Text(translate(shareId
               ? 'Send someone your ID and a link to download DiceX Remote, so they can connect to this computer.'
               : 'Send someone a link to download DiceX Remote.')),
-          if (shareId && !usedUp)
+          if (shareId)
             Text(
               translate('Your password is not sent. Tell it to them yourself when they connect.'),
               style: TextStyle(fontSize: 12, color: hint),
             ).marginOnly(top: 4),
           if (loading) const LinearProgressIndicator().marginOnly(top: 16),
-          if (usedUp)
-            Text(
-              translate("You've used today's messages. You can send more tomorrow."),
-              style: const TextStyle(color: Colors.orange),
-            ).marginOnly(top: 14),
-          if (!loading && !usedUp && channels.isNotEmpty) ...[
+          if (!loading && channels.isNotEmpty) ...[
             TextField(
               controller: mobile,
               autofocus: true,
@@ -468,18 +499,16 @@ Future<void> showDiceXInviteDialog({bool shareId = false}) async {
           if (sending) const LinearProgressIndicator().marginOnly(top: 10),
         ],
       ),
-      actions: usedUp
-          ? [dialogButton('OK', onPressed: dismiss)]
-          : [
-              dialogButton('Cancel', onPressed: dismiss, isOutline: true),
-              dialogButton('Send', onPressed: canSend ? submit : null),
-            ],
-      onSubmit: usedUp ? dismiss : submit,
+      actions: [
+        dialogButton('Cancel', onPressed: dismiss, isOutline: true),
+        dialogButton('Send', onPressed: canSend ? submit : null),
+      ],
+      onSubmit: submit,
       onCancel: dismiss,
     );
   });
 
-  final options = await _diceXInviteOptions(api, id);
+  final options = await _diceXInviteOptions(api, id, kind);
   if (closed) return;
   // The builder reads these when it next runs, whether or not it has run yet.
   loading = false;
