@@ -37,7 +37,8 @@ class SettingsPage extends StatefulWidget implements PageShape {
   State<SettingsPage> createState() => _SettingsState();
 }
 
-const url = 'https://rustdesk.com/';
+// DiceX: the DiceX Remote site, not rustdesk.com.
+const url = kDiceXRemoteSite;
 
 enum KeepScreenOn {
   never,
@@ -1028,10 +1029,10 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 onPressed: (context) async {
                   await launchUrl(Uri.parse(url));
                 },
-                title: Text(translate("Version: ") + version),
+                title: Text(translate("Version: ") + kDiceXFullVersion),
                 value: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
+                  child: Text('rs.dicex.me',
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                       )),
@@ -1172,20 +1173,28 @@ void showAbout(OverlayDialogManager dialogManager) {
   dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
       title: Text(translate('About RustDesk')),
+      // DiceX: the DiceX version and site. The RustDesk attribution is the AGPL-3.0 "Appropriate
+      // Legal Notices" (section 5d), as in desktop Settings > About.
       content: Wrap(direction: Axis.vertical, spacing: 12, children: [
-        Text('Version: $version'),
+        Text('${translate('Version')}: $kDiceXFullVersion'),
         InkWell(
             onTap: () async {
-              const url = 'https://rustdesk.com/';
-              await launchUrl(Uri.parse(url));
+              await launchUrl(Uri.parse(kDiceXRemoteSite));
             },
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('rustdesk.com',
+              child: Text('rs.dicex.me',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   )),
             )),
+        Text(
+          'Copyright © ${DateTime.now().year} DiceX\n'
+          'Based on RustDesk, Copyright © Purslane Tech Pte. Ltd.\n'
+          'Licensed under the GNU AGPL v3.0, without any warranty.\n'
+          'Source code: https://github.com/mydicex/dicex-remote',
+          style: const TextStyle(fontSize: 12),
+        ),
       ]),
       actions: [],
     );

@@ -16,6 +16,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+export 'version.dart';
+
 /// The DiceX Remote landing page.
 const String kDiceXRemoteSite = 'https://rs.dicex.me';
 
