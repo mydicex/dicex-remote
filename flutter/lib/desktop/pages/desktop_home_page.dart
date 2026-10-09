@@ -79,39 +79,43 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   Widget buildLeftPane(BuildContext context) {
     final isIncomingOnly = bind.isIncomingOnly();
     final isOutgoingOnly = bind.isOutgoingOnly();
+    // DiceX: the redesign (owner, 2026-10-09). This device in one card (the ID with its region,
+    // copy and settings, then the password), the two ways to send something below it, and the
+    // language flags and site link at the foot. Same models and actions as RustDesk's layout.
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
-      if (bind.isCustomClient())
-        Align(
-          alignment: Alignment.center,
-          // DiceX: link to the DiceX Remote site instead of "Powered by RustDesk".
-          child: diceXSiteLink(context),
-        ),
       Align(
         alignment: Alignment.center,
         child: loadLogo(),
       ),
       buildTip(context),
-      if (!isOutgoingOnly) buildIDBoard(context),
-      if (!isOutgoingOnly) buildPasswordBoard(context),
-      // DiceX: send someone a link to download DiceX Remote, or that link and this ID.
-      Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton.icon(
-          onPressed: () => showDiceXInviteDialog(),
-          icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
-          label: Text(translate('Invite someone')),
-        ),
-      ).marginOnly(left: 14),
       if (!isOutgoingOnly)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: () => showDiceXInviteDialog(shareId: true),
-            icon: const Icon(Icons.send_to_mobile_outlined, size: 18),
-            label: Text(translate('Send my ID')),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 6),
+          decoration: diceXCardDecoration(context),
+          child: Column(
+            children: [
+              buildIDBoard(context),
+              Divider(height: 14, color: Theme.of(context).dividerColor),
+              buildPasswordBoard(context),
+            ],
           ),
-        ).marginOnly(left: 14),
+        ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+        child: Column(
+          children: [
+            diceXActionButton(context, Icons.person_add_alt_1_outlined,
+                'Invite someone', () => showDiceXInviteDialog()),
+            if (!isOutgoingOnly) ...[
+              const SizedBox(height: 8),
+              diceXActionButton(context, Icons.send_to_mobile_outlined,
+                  'Send my ID', () => showDiceXInviteDialog(shareId: true)),
+            ],
+          ],
+        ),
+      ),
       const SizedBox(height: 6),
       FutureBuilder<Widget>(
         future: Future.value(
@@ -150,7 +154,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     return ChangeNotifierProvider.value(
       value: gFFI.serverModel,
       child: Container(
-        width: isIncomingOnly ? 280.0 : 200.0,
+        width: isIncomingOnly ? 280.0 : 250.0,
         color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
@@ -164,12 +168,19 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                   ),
                 ),
                 Expanded(child: Container()),
-                // DiceX: language flags, besides the box in Settings (owner, 2026-10-01).
+                // DiceX: language flags (besides the box in Settings, owner 2026-10-01) and the
+                // link to the DiceX Remote site, where upstream showed "Powered by RustDesk".
                 if (!isOutgoingOnly)
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: DiceXLanguageFlags(),
-                  ).marginOnly(left: 14, bottom: 10),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 4, 14, 10),
+                    child: Row(
+                      children: [
+                        const DiceXLanguageFlags(),
+                        const Spacer(),
+                        if (bind.isCustomClient()) diceXSiteLink(context),
+                      ],
+                    ),
+                  ),
               ],
             ),
             if (isOutgoingOnly)
@@ -212,77 +223,71 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
+  // DiceX: the ID part of the "this device" card: label, region and settings above, the ID large
+  // with a copy button below. The ID is always laid out left to right: in a right-to-left line
+  // the bidi algorithm would reverse its space-separated groups.
   buildIDBoard(BuildContext context) {
     final model = gFFI.serverModel;
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 11),
-      height: 57,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Container(
-            width: 2,
-            decoration: const BoxDecoration(color: MyTheme.accent),
-          ).marginOnly(top: 5),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 7),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 25,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // DiceX: the region sits next to the ID; both sides of a session must
-                        // be on the same one.
-                        Row(mainAxisSize: MainAxisSize.min, children: [
-                          Text(
-                            translate("ID"),
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.color
-                                    ?.withOpacity(0.5)),
-                          ),
-                          const SizedBox(width: 10),
-                          const DiceXRegionChip(),
-                        ]).marginOnly(top: 5),
-                        buildPopupMenu(context)
-                      ],
-                    ),
+    void copyId() {
+      Clipboard.setData(ClipboardData(text: model.serverId.text));
+      showToast(translate("Copied"));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              translate("ID"),
+              style: TextStyle(fontSize: 13, color: diceXMutedColor(context)),
+            ),
+            const SizedBox(width: 8),
+            // Both sides of a session must be on the same region.
+            const DiceXRegionChip(),
+            const Spacer(),
+            buildPopupMenu(context),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onDoubleTap: copyId,
+                child: TextFormField(
+                  controller: model.serverId,
+                  readOnly: true,
+                  textDirection: TextDirection.ltr,
+                  textAlign: diceXIsRtl() ? TextAlign.right : TextAlign.left,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    filled: false,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 6),
                   ),
-                  Flexible(
-                    child: GestureDetector(
-                      onDoubleTap: () {
-                        Clipboard.setData(
-                            ClipboardData(text: model.serverId.text));
-                        showToast(translate("Copied"));
-                      },
-                      child: TextFormField(
-                        controller: model.serverId,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.only(top: 10, bottom: 10),
-                        ),
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      ).workaroundFreezeLinuxMint(),
-                    ),
-                  )
-                ],
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ).workaroundFreezeLinuxMint(),
               ),
             ),
-          ),
-        ],
-      ),
+            Tooltip(
+              message: translate("Copy"),
+              child: InkWell(
+                onTap: copyId,
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child:
+                      Icon(Icons.copy_rounded, size: 18, color: MyTheme.accent),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -296,9 +301,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         child: Obx(
           () => CircleAvatar(
             radius: 15,
+            // DiceX: it now sits on the card, so no fill until hovered.
             backgroundColor: hover.value
-                ? Theme.of(context).scaffoldBackgroundColor
-                : Theme.of(context).colorScheme.background,
+                ? Theme.of(context).hoverColor
+                : Colors.transparent,
             child: Icon(
               Icons.more_vert_outlined,
               size: 20,
@@ -327,133 +333,115 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final textColor = Theme.of(context).textTheme.titleLarge?.color;
     final showOneTime = model.approveMode != 'click' &&
         model.verificationMethod != kUsePermanentPassword;
-    return Container(
-      margin: EdgeInsets.only(left: 20.0, right: 16, top: 13, bottom: 13),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Container(
-            width: 2,
-            height: 52,
-            decoration: BoxDecoration(color: MyTheme.accent),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 7),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AutoSizeText(
-                    translate("One-time Password"),
-                    style: TextStyle(
-                        fontSize: 14, color: textColor?.withOpacity(0.5)),
-                    maxLines: 1,
+    // DiceX: the password part of the "this device" card; same actions as RustDesk's layout.
+    final idle = MyTheme.accent.withOpacity(0.55);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          translate("One-time Password"),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 13, color: diceXMutedColor(context)),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onDoubleTap: () {
+                  if (showOneTime) {
+                    Clipboard.setData(
+                        ClipboardData(text: model.serverPasswd.text));
+                    showToast(translate("Copied"));
+                  }
+                },
+                child: TextFormField(
+                  controller: model.serverPasswd,
+                  readOnly: true,
+                  textDirection: TextDirection.ltr,
+                  textAlign: diceXIsRtl() ? TextAlign.right : TextAlign.left,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    filled: false,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 6),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onDoubleTap: () {
-                            if (showOneTime) {
-                              Clipboard.setData(
-                                  ClipboardData(text: model.serverPasswd.text));
-                              showToast(translate("Copied"));
-                            }
-                          },
-                          child: TextFormField(
-                            controller: model.serverPasswd,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding:
-                                  EdgeInsets.only(top: 14, bottom: 10),
-                            ),
-                            style: TextStyle(fontSize: 15),
-                          ).workaroundFreezeLinuxMint(),
-                        ),
-                      ),
-                      if (showOneTime)
-                        AnimatedRotationWidget(
-                          onPressed: () => bind.mainUpdateTemporaryPassword(),
-                          child: Tooltip(
-                            message: translate('Refresh Password'),
-                            child: Obx(() => RotatedBox(
-                                quarterTurns: 2,
-                                child: Icon(
-                                  Icons.refresh,
-                                  color: refreshHover.value
-                                      ? textColor
-                                      : Color(0xFFDDDDDD),
-                                  size: 22,
-                                ))),
-                          ),
-                          onHover: (value) => refreshHover.value = value,
-                        ).marginOnly(right: 8, top: 4),
-                      if (!bind.isDisableSettings())
-                        InkWell(
-                          child: Tooltip(
-                            message: translate('Change Password'),
-                            child: Obx(
-                              () => Icon(
-                                Icons.edit,
-                                color: editHover.value
-                                    ? textColor
-                                    : Color(0xFFDDDDDD),
-                                size: 22,
-                              ).marginOnly(right: 8, top: 4),
-                            ),
-                          ),
-                          onTap: () => DesktopSettingPage.switch2page(
-                              SettingsTabKey.safety),
-                          onHover: (value) => editHover.value = value,
-                        ),
-                    ],
-                  ),
-                ],
+                  style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1),
+                ).workaroundFreezeLinuxMint(),
               ),
             ),
-          ),
-        ],
-      ),
+            if (showOneTime)
+              AnimatedRotationWidget(
+                onPressed: () => bind.mainUpdateTemporaryPassword(),
+                child: Tooltip(
+                  message: translate('Refresh Password'),
+                  child: Obx(() => RotatedBox(
+                      quarterTurns: 2,
+                      child: Icon(
+                        Icons.refresh,
+                        color: refreshHover.value ? textColor : idle,
+                        size: 20,
+                      ))),
+                ),
+                onHover: (value) => refreshHover.value = value,
+              ).paddingSymmetric(horizontal: 4),
+            if (!bind.isDisableSettings())
+              InkWell(
+                child: Tooltip(
+                  message: translate('Change Password'),
+                  child: Obx(
+                    () => Icon(
+                      Icons.edit,
+                      color: editHover.value ? textColor : idle,
+                      size: 20,
+                    ).paddingSymmetric(horizontal: 4),
+                  ),
+                ),
+                onTap: () =>
+                    DesktopSettingPage.switch2page(SettingsTabKey.safety),
+                onHover: (value) => editHover.value = value,
+              ),
+          ],
+        ),
+      ],
     );
   }
 
   buildTip(BuildContext context) {
     final isOutgoingOnly = bind.isOutgoingOnly();
+    // DiceX: a smaller, bolder title and a muted tip above the card, start-aligned in either
+    // direction.
+    final tipStyle = TextStyle(
+        fontSize: 12, height: 1.4, color: diceXMutedColor(context));
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 20.0, right: 16, top: 16.0, bottom: 5),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              if (!isOutgoingOnly)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    translate("Your Desktop"),
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
+          if (!isOutgoingOnly)
+            Text(
+              translate("Your Desktop"),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+          const SizedBox(height: 6),
           if (!isOutgoingOnly)
             Text(
               translate("desk_tip"),
               overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: tipStyle,
             ),
           if (isOutgoingOnly)
             Text(
               translate("outgoing_only_desk_tip"),
               overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: tipStyle,
             ),
         ],
       ),

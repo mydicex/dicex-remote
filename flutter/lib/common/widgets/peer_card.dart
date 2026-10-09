@@ -188,6 +188,9 @@ class _PeerCardState extends State<_PeerCard>
                             child: Text(
                           peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
                           overflow: TextOverflow.ellipsis,
+                          // DiceX: a spaced ID keeps its order in a right-to-left layout.
+                          textDirection:
+                              peer.alias.isEmpty ? TextDirection.ltr : null,
                           style: Theme.of(context).textTheme.titleSmall,
                         )),
                       ]).marginOnly(top: isPortrait ? 0 : 2),
@@ -370,6 +373,9 @@ class _PeerCardState extends State<_PeerCard>
                             child: Text(
                           peer.alias.isEmpty ? formatID(peer.id) : peer.alias,
                           overflow: TextOverflow.ellipsis,
+                          // DiceX: a spaced ID keeps its order in a right-to-left layout.
+                          textDirection:
+                              peer.alias.isEmpty ? TextDirection.ltr : null,
                           style: Theme.of(context).textTheme.titleSmall,
                         )),
                       ]).paddingSymmetric(vertical: 8)),

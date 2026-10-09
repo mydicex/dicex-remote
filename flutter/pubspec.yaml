@@ -161,6 +161,17 @@ flutter:
     - assets/dicex/
 
   fonts:
+    # DiceX: the app's text face in every language (SIL OFL 1.1, assets/fonts/Vazirmatn-OFL.txt),
+    # the same as the DiceX Remote site.
+    - family: Vazirmatn
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Regular.ttf
+        - asset: assets/fonts/Vazirmatn-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Vazirmatn-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Vazirmatn-Bold.ttf
+          weight: 700
     - family: GestureIcons
       fonts:
         - asset: assets/gestures.ttf

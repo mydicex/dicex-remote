@@ -248,18 +248,21 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
 class MyTheme {
   MyTheme._();
 
-  static const Color grayBg = Color(0xFFEFEFF2);
-  static const Color accent = Color(0xFF0071FF);
-  static const Color accent50 = Color(0x770071FF);
-  static const Color accent80 = Color(0xAA0071FF);
+  // DiceX: DiceX Remote's orchid (the mark's #C94BD8 / #8A2FA0) where RustDesk had its blue, and
+  // lavender greys instead of neutral ones (owner, 2026-10-09). Dark surfaces: darkTheme below.
+  static const Color grayBg = Color(0xFFF4F1F7);
+  static const Color accent = Color(0xFFA23BC0);
+  static const Color accent50 = Color(0x77A23BC0);
+  static const Color accent80 = Color(0xAAA23BC0);
   static const Color canvasColor = Color(0xFF212121);
-  static const Color border = Color(0xFFCCCCCC);
-  static const Color idColor = Color(0xFF00B6F0);
+  static const Color border = Color(0xFFDDD3E6);
+  static const Color idColor = Color(0xFFC94BD8);
   static const Color darkGray = Color.fromARGB(255, 148, 148, 148);
   static const Color cmIdColor = Color(0xFF21790B);
   static const Color dark = Colors.black87;
-  static const Color button = Color(0xFF2C8CFF);
-  static const Color hoverBorder = Color(0xFF999999);
+  static const Color button = Color(0xFFA23BC0);
+  static const Color hoverBorder = Color(0xFFB9A6C8);
+  static const String fontFamily = 'Vazirmatn';
 
   // ListTile
   static const ListTileThemeData listTileTheme = ListTileThemeData(
@@ -373,11 +376,13 @@ class MyTheme {
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
     brightness: Brightness.light,
-    hoverColor: Color.fromARGB(255, 224, 224, 224),
+    fontFamily: fontFamily,
+    hoverColor: Color(0xFFEDE6F2),
     scaffoldBackgroundColor: Colors.white,
     dialogBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
+      backgroundColor: accent,
     ),
     dialogTheme: DialogTheme(
       elevation: 15,
@@ -396,19 +401,19 @@ class MyTheme {
             filled: true,
             isDense: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
           )
         : null,
     textTheme: const TextTheme(
-        titleLarge: TextStyle(fontSize: 19, color: Colors.black87),
-        titleSmall: TextStyle(fontSize: 14, color: Colors.black87),
-        bodySmall: TextStyle(fontSize: 12, color: Colors.black87, height: 1.25),
+        titleLarge: TextStyle(fontSize: 19, color: Color(0xFF1F1B24)),
+        titleSmall: TextStyle(fontSize: 14, color: Color(0xFF1F1B24)),
+        bodySmall: TextStyle(fontSize: 12, color: Color(0xFF1F1B24), height: 1.25),
         bodyMedium:
-            TextStyle(fontSize: 14, color: Colors.black87, height: 1.25),
+            TextStyle(fontSize: 14, color: Color(0xFF1F1B24), height: 1.25),
         labelLarge: TextStyle(fontSize: 16.0, color: MyTheme.accent80)),
     cardColor: grayBg,
-    hintColor: Color(0xFFAAAAAA),
+    hintColor: Color(0xFF9A90A5),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     tabBarTheme: const TabBarTheme(
       labelColor: Colors.black87,
@@ -430,17 +435,19 @@ class MyTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: MyTheme.accent,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         backgroundColor: grayBg,
-        foregroundColor: Colors.black87,
+        foregroundColor: Color(0xFF1F1B24),
+        side: BorderSide(color: border),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
@@ -452,13 +459,13 @@ class MyTheme {
         style:
             MenuStyle(backgroundColor: MaterialStatePropertyAll(Colors.white))),
     colorScheme: ColorScheme.light(
-        primary: Colors.blue, secondary: accent, background: grayBg),
+        primary: accent, secondary: accent, background: grayBg),
     popupMenuTheme: PopupMenuThemeData(
         color: Colors.white,
         shape: RoundedRectangleBorder(
           side: BorderSide(
               color: (isDesktop || isWebDesktop)
-                  ? Color(0xFFECECEC)
+                  ? Color(0xFFE6DEED)
                   : Colors.transparent),
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
         )),
@@ -471,9 +478,10 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     brightness: Brightness.dark,
-    hoverColor: Color.fromARGB(255, 45, 46, 53),
-    scaffoldBackgroundColor: Color(0xFF18191E),
-    dialogBackgroundColor: Color(0xFF18191E),
+    fontFamily: fontFamily,
+    hoverColor: Color(0xFF2A2531),
+    scaffoldBackgroundColor: Color(0xFF16141A),
+    dialogBackgroundColor: Color(0xFF16141A),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
     ),
@@ -483,18 +491,18 @@ class MyTheme {
         borderRadius: BorderRadius.circular(18.0),
         side: BorderSide(
           width: 1,
-          color: Color(0xFF24252B),
+          color: Color(0xFF2A2531),
         ),
       ),
     ),
     scrollbarTheme: scrollbarThemeDark,
     inputDecorationTheme: (isDesktop || isWebDesktop)
         ? InputDecorationTheme(
-            fillColor: Color(0xFF24252B),
+            fillColor: Color(0xFF221E28),
             filled: true,
             isDense: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
           )
         : null,
@@ -509,7 +517,7 @@ class MyTheme {
         color: accent80,
       ),
     ),
-    cardColor: Color(0xFF24252B),
+    cardColor: Color(0xFF221E28),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     tabBarTheme: const TabBarTheme(
       labelColor: Colors.white70,
@@ -537,18 +545,18 @@ class MyTheme {
         disabledForegroundColor: Colors.white70,
         disabledBackgroundColor: Colors.white10,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        backgroundColor: Color(0xFF24252B),
+        backgroundColor: Color(0xFF221E28),
         side: BorderSide(color: Colors.white12, width: 0.5),
         disabledForegroundColor: Colors.white70,
         foregroundColor: Colors.white70,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
@@ -560,9 +568,9 @@ class MyTheme {
         style: MenuStyle(
             backgroundColor: MaterialStatePropertyAll(Color(0xFF121212)))),
     colorScheme: ColorScheme.dark(
-      primary: Colors.blue,
+      primary: Color(0xFFC94BD8),
       secondary: accent,
-      background: Color(0xFF24252B),
+      background: Color(0xFF1E1B23),
     ),
     popupMenuTheme: PopupMenuThemeData(
         shape: RoundedRectangleBorder(
@@ -1114,19 +1122,23 @@ class CustomAlertDialog extends StatelessWidget {
         }
         return KeyEventResult.ignored;
       },
-      child: AlertDialog(
-          scrollable: true,
-          title: title,
-          content: ConstrainedBox(
-            constraints: contentBoxConstraints,
-            child: content,
-          ),
-          actions: actions,
-          titlePadding: titlePadding ?? MyTheme.dialogTitlePadding(),
-          contentPadding:
-              MyTheme.dialogContentPadding(actions: actions is List),
-          actionsPadding: MyTheme.dialogActionsPadding(),
-          buttonPadding: MyTheme.dialogButtonPadding),
+      // DiceX: dialogs follow the app language's direction in every window, remote ones too.
+      child: Directionality(
+        textDirection: _diceXAppDirection(),
+        child: AlertDialog(
+            scrollable: true,
+            title: title,
+            content: ConstrainedBox(
+              constraints: contentBoxConstraints,
+              child: content,
+            ),
+            actions: actions,
+            titlePadding: titlePadding ?? MyTheme.dialogTitlePadding(),
+            contentPadding:
+                MyTheme.dialogContentPadding(actions: actions is List),
+            actionsPadding: MyTheme.dialogActionsPadding(),
+            buttonPadding: MyTheme.dialogButtonPadding),
+      ),
     );
   }
 }
@@ -1321,7 +1333,7 @@ Color? _msgboxColor(String type) {
   if (type.contains("error") || type == "re-input-password") {
     return Color(0xFFE04F5F);
   }
-  return Color(0xFF2C8CFF);
+  return MyTheme.accent; // DiceX: orchid, not RustDesk blue
 }
 
 Widget msgboxIcon(String type) {
@@ -1404,13 +1416,40 @@ void msgBoxCommon(OverlayDialogManager dialogManager, String title,
       ));
 }
 
+// DiceX: Persian and Arabic are written right to left (owner, 2026-10-09). The main window's pages,
+// the phone app and every dialog follow the app language; lib/dicex/dicex.dart has the same rule
+// for widgets (diceXIsRtl). Kept here as well so common.dart need not import lib/dicex.
+TextDirection _diceXAppDirection() {
+  final lang = bind.mainGetLocalOption(key: kCommConfKeyLang);
+  return lang == 'fa' || lang == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+}
+
+// DiceX: a screen that shows the other device (remote view, files, camera, terminal) stays left
+// to right whatever the app language.
+Widget _diceXLtr(Widget child) =>
+    Directionality(textDirection: TextDirection.ltr, child: child);
+
+// DiceX: device cards and avatars take one of these muted colours, which sit with the orchid
+// theme, instead of any hue the hash lands on. Same string, same colour, as before.
+const List<int> _kDiceXCardPalette = [
+  0xA23BC0, // orchid
+  0x7B4FC4, // violet
+  0x5B5FC7, // indigo
+  0x2E8C9A, // teal
+  0x3F8F6B, // green
+  0xB4507A, // rose
+  0x8A6D3B, // bronze
+  0x5E6B7D, // slate
+];
+
 Color str2color(String str, [alpha = 0xFF]) {
   var hash = 160 << 16 + 114 << 8 + 91;
   for (var i = 0; i < str.length; i += 1) {
     hash = str.codeUnitAt(i) + ((hash << 5) - hash);
   }
   hash = hash % 16777216;
-  return Color((hash & 0xFF7FFF) | (alpha << 24));
+  return Color(_kDiceXCardPalette[hash.abs() % _kDiceXCardPalette.length] |
+      (alpha << 24));
 }
 
 Color str2color2(String str, {List<int> existing = const []}) {
@@ -2643,11 +2682,11 @@ connect(BuildContext context, String id,
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => FileManagerPage(
+            builder: (BuildContext context) => _diceXLtr(FileManagerPage(
                 id: id,
                 password: password,
                 isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
+                forceRelay: forceRelay)),
           ),
         );
       }
@@ -2670,11 +2709,11 @@ connect(BuildContext context, String id,
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => ViewCameraPage(
+            builder: (BuildContext context) => _diceXLtr(ViewCameraPage(
                 id: id,
                 password: password,
                 isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
+                forceRelay: forceRelay)),
           ),
         );
       }
@@ -2682,12 +2721,12 @@ connect(BuildContext context, String id,
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => TerminalPage(
+          builder: (BuildContext context) => _diceXLtr(TerminalPage(
             id: id,
             password: password,
             isSharedPassword: isSharedPassword,
             forceRelay: forceRelay,
-          ),
+          )),
         ),
       );
     } else {
@@ -2708,11 +2747,11 @@ connect(BuildContext context, String id,
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => RemotePage(
+            builder: (BuildContext context) => _diceXLtr(RemotePage(
                 id: id,
                 password: password,
                 isSharedPassword: isSharedPassword,
-                forceRelay: forceRelay),
+                forceRelay: forceRelay)),
           ),
         );
       }

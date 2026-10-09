@@ -10,14 +10,16 @@ Widget getConnectionPageTitle(BuildContext context, bool isWeb) {
       Expanded(
           child: Row(
         children: [
-          AutoSizeText(
-            translate('Control Remote Desktop'),
-            maxLines: 1,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.merge(TextStyle(height: 1)),
-          ).marginOnly(right: 4),
+          // DiceX: smaller and bolder (redesign, 2026-10-09); the gap follows the text direction.
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 4),
+            child: AutoSizeText(
+              translate('Control Remote Desktop'),
+              maxLines: 1,
+              style: Theme.of(context).textTheme.titleLarge?.merge(
+                  TextStyle(height: 1.2, fontSize: 18, fontWeight: FontWeight.w600)),
+            ),
+          ),
           Tooltip(
             waitDuration: Duration(milliseconds: 300),
             message: translate(isWeb ? "web_id_input_tip" : "id_input_tip"),

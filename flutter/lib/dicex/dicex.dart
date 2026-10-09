@@ -101,8 +101,7 @@ class _DiceXRegionChipState extends State<DiceXRegionChip> {
   @override
   Widget build(BuildContext context) {
     final current = diceXCurrentRegion();
-    final color =
-        Theme.of(context).textTheme.titleLarge?.color?.withOpacity(0.6);
+    final color = diceXAccent(context);
     return PopupMenuButton<DiceXRegion>(
       tooltip: translate('Region'),
       padding: EdgeInsets.zero,
@@ -117,15 +116,25 @@ class _DiceXRegionChipState extends State<DiceXRegionChip> {
                 child: Text(translate(region.label)),
               ))
           .toList(),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.public, size: 13, color: color),
-        const SizedBox(width: 3),
-        Text(
-          current == null ? translate('Custom server') : translate(current.label),
-          style: TextStyle(fontSize: 12, color: color),
+      // An orchid pill (redesign, 2026-10-09).
+      child: Container(
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 2, 4, 2),
+        decoration: BoxDecoration(
+          color: MyTheme.accent.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(999),
         ),
-        Icon(Icons.arrow_drop_down, size: 16, color: color),
-      ]),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.public, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            current == null
+                ? translate('Custom server')
+                : translate(current.label),
+            style: TextStyle(fontSize: 11, color: color),
+          ),
+          Icon(Icons.arrow_drop_down, size: 16, color: color),
+        ]),
+      ),
     );
   }
 }
@@ -148,6 +157,63 @@ Widget diceXSiteLink(BuildContext context) {
 String _diceXLang() {
   final lang = bind.mainGetLocalOption(key: kCommConfKeyLang);
   return kDiceXLanguages.contains(lang) ? lang : 'en';
+}
+
+/// Persian and Arabic are written right to left (owner, 2026-10-09). The main window's pages, the
+/// phone app and every dialog follow it; screens showing the other device stay left to right.
+bool diceXIsRtl() => const ['fa', 'ar'].contains(_diceXLang());
+
+/// [child] in the app language's direction.
+Widget diceXDirectional(Widget child) => Directionality(
+    textDirection: diceXIsRtl() ? TextDirection.rtl : TextDirection.ltr,
+    child: child);
+
+/// The look of the redesign (owner, 2026-10-09): white cards with a lavender hairline on light,
+/// a lifted aubergine on dark, 14 px corners.
+BoxDecoration diceXCardDecoration(BuildContext context) {
+  final dark = Theme.of(context).brightness == Brightness.dark;
+  return BoxDecoration(
+    color: dark ? const Color(0xFF26212D) : Colors.white,
+    borderRadius: BorderRadius.circular(14),
+    border: Border.all(
+        color: dark ? const Color(0xFF352E3E) : const Color(0xFFEAE3F0)),
+  );
+}
+
+/// Muted text, for labels above values.
+Color diceXMutedColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFFA79DB3)
+        : const Color(0xFF7B7285);
+
+/// The orchid of icons and accents, a little lighter on dark backgrounds.
+Color diceXAccent(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFFD69BE6)
+        : MyTheme.accent;
+
+/// A full-width secondary action on the home page ("Invite someone", "Send my ID").
+Widget diceXActionButton(BuildContext context, IconData icon, String label,
+    VoidCallback onPressed) {
+  final dark = Theme.of(context).brightness == Brightness.dark;
+  return SizedBox(
+    width: double.infinity,
+    child: OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18, color: diceXAccent(context)),
+      label: Text(translate(label),
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      style: OutlinedButton.styleFrom(
+        alignment: AlignmentDirectional.centerStart,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        backgroundColor: dark ? const Color(0xFF26212D) : Colors.white,
+        foregroundColor: dark ? Colors.white : const Color(0xFF1F1B24),
+        side: BorderSide(
+            color: dark ? const Color(0xFF352E3E) : const Color(0xFFE1D3EA)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    ),
+  );
 }
 
 /// Same steps as the language box in desktop Settings. The phone has no sub-windows (the
@@ -177,7 +243,7 @@ class DiceXLanguageFlags extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: kDiceXLanguageFlags.map((language) {
         final selected = language.code == current;
-        return Tooltip(
+        final flag = Tooltip(
           message: language.name,
           child: Semantics(
             button: true,
@@ -210,7 +276,9 @@ class DiceXLanguageFlags extends StatelessWidget {
               ),
             ),
           ),
-        ).marginOnly(right: 4);
+        );
+        return Padding(
+            padding: const EdgeInsetsDirectional.only(end: 4), child: flag);
       }).toList(),
     );
   }

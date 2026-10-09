@@ -594,6 +594,13 @@ class _DesktopTabState extends State<DesktopTab>
 
   Widget _buildBar() {
     final isIncomingHomePage = bind.isIncomingOnly() && isInHomePage();
+    // DiceX: the title bar stays left to right in Persian and Arabic, so the window's minimise,
+    // maximise and close keep their place; the pages under it follow the language.
+    return Directionality(
+        textDirection: TextDirection.ltr, child: _buildBarRow(isIncomingHomePage));
+  }
+
+  Widget _buildBarRow(bool isIncomingHomePage) {
     return Row(
       children: [
         Expanded(
@@ -1458,19 +1465,19 @@ class TabbarTheme extends ThemeExtension<TabbarTheme> {
 
   static const light = TabbarTheme(
       selectedTabIconColor: MyTheme.accent,
-      unSelectedTabIconColor: Color.fromARGB(255, 162, 203, 241),
+      unSelectedTabIconColor: Color(0xFFD9B8E4), // DiceX: light orchid, was light blue
       selectedTextColor: Colors.black,
       unSelectedTextColor: Color.fromARGB(255, 112, 112, 112),
       selectedIconColor: Color.fromARGB(255, 26, 26, 26),
       unSelectedIconColor: Color.fromARGB(255, 96, 96, 96),
-      dividerColor: Color.fromARGB(255, 238, 238, 238),
+      dividerColor: Color(0xFFEDE6F2),
       hoverColor: Colors.white54,
       closeHoverColor: Colors.white,
       selectedTabBackgroundColor: Colors.white54);
 
   static const dark = TabbarTheme(
       selectedTabIconColor: MyTheme.accent,
-      unSelectedTabIconColor: Color.fromARGB(255, 30, 65, 98),
+      unSelectedTabIconColor: Color(0xFF5A2E68), // DiceX: dark orchid, was dark blue
       selectedTextColor: Colors.white,
       unSelectedTextColor: Color.fromARGB(255, 192, 192, 192),
       selectedIconColor: Color.fromARGB(255, 192, 192, 192),

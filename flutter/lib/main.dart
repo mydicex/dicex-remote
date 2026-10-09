@@ -25,6 +25,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'common.dart';
 import 'consts.dart';
+import 'dicex/dicex.dart' show diceXDirectional;
 import 'dicex/splash_win.dart' if (dart.library.html) 'dicex/splash_web.dart';
 import 'mobile/pages/home_page.dart';
 import 'mobile/pages/server_page.dart';
@@ -520,18 +521,23 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             // FirebaseAnalyticsObserver(analytics: analytics),
             BotToastNavigatorObserver(),
           ],
+          // DiceX: the phone app and the desktop main window follow the app language's direction
+          // (right to left in Persian and Arabic); remote screens stay left to right (common.dart).
           builder: isAndroid
               ? (context, child) => AccessibilityListener(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
                         textScaler: TextScaler.linear(1.0),
                       ),
-                      child: child ?? Container(),
+                      child: diceXDirectional(child ?? Container()),
                     ),
                   )
               : (context, child) {
                   child = _keepScaleBuilder(context, child);
                   child = botToastBuilder(context, child);
+                  if (isDesktop && desktopType == DesktopType.main) {
+                    child = diceXDirectional(child);
+                  }
                   if ((isDesktop && desktopType == DesktopType.main) ||
                       isWebDesktop) {
                     child = keyListenerBuilder(context, child);

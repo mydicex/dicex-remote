@@ -166,11 +166,9 @@ class _ConnectionPageState extends State<ConnectionPage> {
       height: 84,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+        // DiceX: a raised card, as on the desktop home page (redesign, 2026-10-09).
         child: Ink(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.all(Radius.circular(13)),
-          ),
+          decoration: diceXCardDecoration(context),
           child: Row(
             children: <Widget>[
               Expanded(
@@ -241,14 +239,18 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         enableSuggestions: false,
                         keyboardType: TextInputType.visiblePassword,
                         // keyboardType: TextInputType.number,
+                        // DiceX: a typed ID keeps its digit groups in order in Persian and Arabic.
+                        textDirection: TextDirection.ltr,
+                        textAlign:
+                            diceXIsRtl() ? TextAlign.right : TextAlign.left,
                         onChanged: (String text) {
                           _idController.id = text;
                         },
-                        style: const TextStyle(
-                          fontFamily: 'WorkSans',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                          color: MyTheme.idColor,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 26,
+                          letterSpacing: 0.5,
+                          color: diceXAccent(context),
                         ),
                         decoration: InputDecoration(
                           labelText: translate('Remote ID'),
@@ -292,7 +294,7 @@ class _ConnectionPageState extends State<ConnectionPage> {
                       }
                       maxHeight = maxHeight.clamp(0, 200);
                       return Align(
-                          alignment: Alignment.topLeft,
+                          alignment: AlignmentDirectional.topStart,
                           child: Container(
                               decoration: BoxDecoration(
                                 boxShadow: [
@@ -348,13 +350,18 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         },
                         icon: Icon(Icons.clear, color: MyTheme.darkGray)),
                   )),
-              SizedBox(
-                width: 60,
-                height: 60,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_forward,
-                      color: MyTheme.darkGray, size: 45),
-                  onPressed: onConnect,
+              // DiceX: a filled orchid connect button; the arrow turns with the text direction.
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 12),
+                child: Material(
+                  color: MyTheme.accent,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: translate('Connect'),
+                    icon: const Icon(Icons.arrow_forward,
+                        color: Colors.white, size: 26),
+                    onPressed: onConnect,
+                  ),
                 ),
               ),
             ],

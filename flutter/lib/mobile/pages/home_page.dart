@@ -150,8 +150,13 @@ class HomePageState extends State<HomePage> {
         ],
       );
     }
-    // DiceX: the display name ("DiceX Remote"), not the space-free identifier.
-    return Text(bind.mainGetAppDisplayNameSync());
+    // DiceX: the mark and the display name ("DiceX Remote"), not the space-free identifier.
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Image.asset('assets/icon.png', width: 24, height: 24),
+      const SizedBox(width: 8),
+      Text(bind.mainGetAppDisplayNameSync(),
+          style: const TextStyle(fontWeight: FontWeight.w600)),
+    ]);
   }
 }
 

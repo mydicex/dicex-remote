@@ -815,5 +815,6 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Your password is not sent. Tell it to them yourself when they connect.", "رمز عبور شما فرستاده نمی‌شود. وقتی وصل شدند، آن را خودتان به آن‌ها بگویید."),
         ("Your ID was sent", "شناسهٔ شما ارسال شد"),
         ("Messages left today", "پیام‌های باقی‌ماندهٔ امروز"),
+        ("Copy", "کپی"),
     ].iter().cloned().collect();
 }

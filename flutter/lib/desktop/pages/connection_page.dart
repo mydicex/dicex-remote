@@ -18,6 +18,7 @@ import '../../common.dart';
 import '../../common/formatter/id_formatter.dart';
 import '../../common/widgets/peer_tab_page.dart';
 import '../../common/widgets/autocomplete.dart';
+import '../../dicex/dicex.dart';
 import '../../models/platform_model.dart';
 import '../../desktop/widgets/material_mod_popup_menu.dart' as mod_menu;
 
@@ -306,19 +307,25 @@ class _ConnectionPageState extends State<ConnectionPage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     return Column(
       children: [
+        // DiceX: start and end, not left and right, so the pane mirrors in Persian and Arabic.
         Expanded(
-            child: Column(
-          children: [
-            Row(
-              children: [
-                Flexible(child: _buildRemoteIDTextField(context)),
-              ],
-            ).marginOnly(top: 22),
-            SizedBox(height: 12),
-            Divider().paddingOnly(right: 12),
-            Expanded(child: PeerTabPage()),
-          ],
-        ).paddingOnly(left: 12.0)),
+            child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Flexible(child: _buildRemoteIDTextField(context)),
+                ],
+              ).marginOnly(top: 18),
+              SizedBox(height: 12),
+              Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 12),
+                  child: Divider()),
+              Expanded(child: PeerTabPage()),
+            ],
+          ),
+        )),
         if (!isOutgoingOnly) const Divider(height: 1),
         if (!isOutgoingOnly) OnlineStatusWidget()
       ],
@@ -343,12 +350,11 @@ class _ConnectionPageState extends State<ConnectionPage>
   /// UI for the remote ID TextField.
   /// Search for a peer.
   Widget _buildRemoteIDTextField(BuildContext context) {
+    // DiceX: a raised card (redesign, 2026-10-09), a little wider than RustDesk's box.
     var w = Container(
-      width: 320 + 20 * 2,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 22),
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(13)),
-          border: Border.all(color: Theme.of(context).colorScheme.background)),
+      width: 400 + 20 * 2,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+      decoration: diceXCardDecoration(context),
       child: Ink(
         child: Column(
           children: [
@@ -414,25 +420,46 @@ class _ConnectionPageState extends State<ConnectionPage>
                   ) {
                     updateTextAndPreserveSelection(
                         fieldTextEditingController, _idController.text);
+                    // DiceX: the theme's face, a lavender outline turning orchid on focus, and
+                    // always left to right: a typed ID keeps its digit groups in order.
+                    final dark =
+                        Theme.of(context).brightness == Brightness.dark;
+                    OutlineInputBorder outline(Color color, double width) =>
+                        OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: color, width: width),
+                        );
                     return Obx(() => TextField(
                           autocorrect: false,
                           enableSuggestions: false,
                           keyboardType: TextInputType.visiblePassword,
                           focusNode: fieldFocusNode,
+                          textDirection: TextDirection.ltr,
+                          textAlign:
+                              diceXIsRtl() ? TextAlign.right : TextAlign.left,
                           style: const TextStyle(
-                            fontFamily: 'WorkSans',
-                            fontSize: 22,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
                             height: 1.4,
                           ),
                           maxLines: 1,
-                          cursorColor:
-                              Theme.of(context).textTheme.titleLarge?.color,
+                          cursorColor: MyTheme.accent,
                           decoration: InputDecoration(
                               filled: false,
                               counterText: '',
                               hintText: _idInputFocused.value
                                   ? null
                                   : translate('Enter Remote ID'),
+                              hintTextDirection: diceXIsRtl()
+                                  ? TextDirection.rtl
+                                  : TextDirection.ltr,
+                              enabledBorder: outline(
+                                  dark
+                                      ? const Color(0xFF4A4054)
+                                      : const Color(0xFFD9C6E4),
+                                  1.5),
+                              focusedBorder: outline(MyTheme.accent, 2),
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 13)),
                           controller: fieldTextEditingController,
@@ -466,7 +493,7 @@ class _ConnectionPageState extends State<ConnectionPage>
                     maxHeight = maxHeight.clamp(0, 200);
 
                     return Align(
-                      alignment: Alignment.topLeft,
+                      alignment: AlignmentDirectional.topStart, // DiceX: mirrors in RTL
                       child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
@@ -518,22 +545,29 @@ class _ConnectionPageState extends State<ConnectionPage>
             Padding(
               padding: const EdgeInsets.only(top: 13.0),
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                // DiceX: a larger Connect, the one filled button on the page (redesign).
                 SizedBox(
-                  height: 28.0,
-                  child: ElevatedButton(
+                  height: 40.0,
+                  child: ElevatedButton.icon(
                     onPressed: () {
                       onConnect();
                     },
-                    child: Text(translate("Connect")),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                    ),
+                    icon: const Icon(Icons.link_rounded, size: 18),
+                    label: Text(translate("Connect"),
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  height: 28.0,
-                  width: 28.0,
+                  height: 40.0,
+                  width: 40.0,
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).dividerColor),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
                     child: StatefulBuilder(

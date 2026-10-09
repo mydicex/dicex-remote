@@ -144,18 +144,17 @@ class _PeerTabPageState extends State<PeerTabPage>
         physics: NeverScrollableScrollPhysics(),
         children: model.visibleEnabledOrderedIndexs.map((t) {
           final selected = model.currentTab == t;
+          // DiceX: the selected tab is a filled orchid pill, a hovered one a light tint
+          // (redesign, 2026-10-09); RustDesk underlined the selected icon.
           final color = selected
-              ? MyTheme.tabbar(context).selectedTextColor
-              : MyTheme.tabbar(context).unSelectedTextColor
-            ?..withOpacity(0.5);
+              ? Colors.white
+              : MyTheme.tabbar(context).unSelectedTextColor;
           final hover = false.obs;
           final deco = BoxDecoration(
-              color: Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.circular(6));
+              color: MyTheme.accent.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(999));
           final decoBorder = BoxDecoration(
-              border: Border(
-            bottom: BorderSide(width: 2, color: color!),
-          ));
+              color: MyTheme.accent, borderRadius: BorderRadius.circular(999));
           counter += 1;
           return ReorderableDragStartListener(
               key: ValueKey(t),
@@ -169,9 +168,9 @@ class _PeerTabPageState extends State<PeerTabPage>
                         decoration: (hover.value
                             ? (selected ? decoBorder : deco)
                             : (selected ? decoBorder : null)),
-                        child: Icon(model.tabIcon(t), color: color)
-                            .paddingSymmetric(horizontal: 4),
-                      ).paddingSymmetric(horizontal: 4),
+                        child: Icon(model.tabIcon(t), color: color, size: 20)
+                            .paddingSymmetric(horizontal: 10, vertical: 4),
+                      ).paddingSymmetric(horizontal: 3),
                       onTap: isOptionFixed(kOptionPeerTabIndex)
                           ? null
                           : () async {
