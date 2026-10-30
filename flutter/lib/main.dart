@@ -26,6 +26,7 @@ import 'package:window_manager/window_manager.dart';
 import 'common.dart';
 import 'consts.dart';
 import 'dicex/dicex.dart' show diceXDirectional;
+import 'dicex/update.dart';
 import 'dicex/splash_win.dart' if (dart.library.html) 'dicex/splash_web.dart';
 import 'mobile/pages/home_page.dart';
 import 'mobile/pages/server_page.dart';
@@ -136,6 +137,8 @@ void runMainApp(bool startService) async {
   // register uni links
   await initEnv(kAppTypeMain);
   checkUpdate();
+  // DiceX: offer a newer DiceX Remote from rsdl.dicex.me.
+  diceXCheckForUpdate();
   // trigger connection status updater
   await bind.mainCheckConnectStatus();
   if (startService) {
@@ -181,6 +184,8 @@ void runMainApp(bool startService) async {
 void runMobileApp() async {
   await initEnv(kAppTypeMain);
   checkUpdate();
+  // DiceX: offer a newer DiceX Remote from rsdl.dicex.me.
+  diceXCheckForUpdate();
   if (isAndroid) androidChannelInit();
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
   draggablePositions.load();

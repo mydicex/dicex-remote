@@ -12,8 +12,8 @@
 // CI reads both lines (.github/workflows/dicex-*.yml) for file names, Windows file properties
 // and Android's versionCode (1000 + build), so this is the one place to bump.
 
-const String kDiceXCoreVersion = '1.5.0';
-const String kDiceXVersion = '1.1.12';
+const String kDiceXCoreVersion = '1.5.1';
+const String kDiceXVersion = '1.1.13';
 
 /// What people see in About, file names and file properties.
 const String kDiceXFullVersion = '$kDiceXCoreVersion-$kDiceXVersion';

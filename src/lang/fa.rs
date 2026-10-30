@@ -858,5 +858,8 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Your ID was sent", "شناسهٔ شما ارسال شد"),
         ("Messages left today", "پیام‌های باقی‌ماندهٔ امروز"),
         ("Copy", "کپی"),
+        ("Update available", "نسخهٔ جدید آماده است"),
+        ("A new version of DiceX Remote is ready to download.", "نسخهٔ تازه‌ای از DiceX Remote برای دانلود آماده است."),
+        ("Later", "بعداً"),
     ].iter().cloned().collect();
 }
