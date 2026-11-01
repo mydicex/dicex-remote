@@ -1324,6 +1324,23 @@ pub fn is_public(url: &str) -> bool {
     host == "rustdesk.com" || host.ends_with(".rustdesk.com")
 }
 
+/// DiceX: whether `url` is one of DiceX's own ID servers (`*.dicex.me`, `*.ntft.tech`). They run
+/// DiceX's hbbs (mydicex/dicex-remote-server), which also brokers UDP and IPv6 hole punching, so
+/// those stay on by default there, as they do on RustDesk's public servers. WebRTC does not.
+fn is_dicex_server(url: &str) -> bool {
+    let parsed = url::Url::parse(url)
+        .ok()
+        .filter(|parsed| parsed.has_host())
+        .or_else(|| url::Url::parse(&format!("http://{url}")).ok());
+    let Some(host) = parsed.as_ref().and_then(url::Url::host_str) else {
+        return false;
+    };
+    let host = host.strip_suffix('.').unwrap_or(host);
+    ["dicex.me", "ntft.tech"]
+        .iter()
+        .any(|d| host == *d || host.ends_with(&format!(".{d}")))
+}
+
 pub fn get_tcp_punch_enabled() -> bool {
     config::option2bool(
         keys::OPTION_ENABLE_TCP_PUNCH,
@@ -1358,6 +1375,12 @@ pub fn get_local_option(key: &str) -> String {
         || key == keys::OPTION_ENABLE_IPV6_PUNCH
         || key == keys::OPTION_ENABLE_WEBRTC
     {
+        if v.is_empty()
+            && key != keys::OPTION_ENABLE_WEBRTC
+            && is_dicex_server(&Config::get_rendezvous_server())
+        {
+            return v;
+        }
         if v.is_empty() {
             if !is_public(&Config::get_rendezvous_server()) {
                 return "N".to_owned();
@@ -3259,6 +3282,15 @@ mod tests {
         assert!(!is_public("hello-rustdesk.com"));
         assert!(!is_public("api.rustdesk.com.evil.test"));
         assert!(!is_public("https://rustdesk.com@evil.test"));
+    }
+
+    #[test]
+    fn test_is_dicex_server_matches_dicex_domains_only() {
+        assert!(is_dicex_server("rsns01.dicex.me"));
+        assert!(is_dicex_server("rsns02.ntft.tech:21116"));
+        assert!(!is_dicex_server("hello-dicex.me"));
+        assert!(!is_dicex_server("rsns01.dicex.me.evil.test"));
+        assert!(!is_dicex_server("192.168.1.10"));
     }
 
     #[test]

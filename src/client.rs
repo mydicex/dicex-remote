@@ -5455,6 +5455,9 @@ async fn test_udp_uat(
     let start = Instant::now();
     let mut msg_out = RendezvousMessage::new();
     msg_out.set_test_nat_request(TestNatRequest {
+        // DiceX: padding. DiceX's hbbs answers this over UDP only when the reply is no larger
+        // than the request; the field is not read on the UDP path.
+        serial: i32::MAX,
         ..Default::default()
     });
     // Adaptive retry strategy that works within TCP RTT constraints

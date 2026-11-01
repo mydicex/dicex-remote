@@ -13,7 +13,7 @@
 // and Android's versionCode (1000 + build), so this is the one place to bump.
 
 const String kDiceXCoreVersion = '1.5.1';
-const String kDiceXVersion = '1.1.13';
+const String kDiceXVersion = '1.1.14';
 
 /// What people see in About, file names and file properties.
 const String kDiceXFullVersion = '$kDiceXCoreVersion-$kDiceXVersion';
